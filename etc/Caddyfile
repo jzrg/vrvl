@@ -1,0 +1,21 @@
+:$PORT
+root * /usr/share/caddy
+file_server browse
+
+header {
+    X-Robots-Tag none
+    X-Content-Type-Options nosniff
+    X-Frame-Options DENY
+    Referrer-Policy no-referrer-when-downgrade
+}
+
+basicauth /$ID/* {
+    $ID $MYUUID-HASH
+}
+
+@websocket_xray_vless {
+header Connection *Upgrade*
+header Upgrade    websocket
+path /$ID-vless
+}
+reverse_proxy @websocket_xray_vless unix//etc/caddy/vless
